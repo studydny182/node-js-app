@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Users</title>
+</head>
+<body>
+  <h1>CRUD User App</h1>
+
+  <form id="userForm">
+    <input type="hidden" id="userId">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <button type="submit">Save</button>
+    <button type="button" onclick="resetForm()">Cancel</button>
+  </form>
+
+  <h2>User List</h2>
+  <ul id="userList"></ul>
+
+  <script>
+    async function loadUsers() {
+      const res = await fetch('/users');
+      const users = await res.json();
+      const list = document.getElementById('userList');
+      list.innerHTML = '';
+      users.forEach(u => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <b>${u.name}</b> (${u.email})
+          <button onclick="editUser(${u.id}, '${u.name}', '${u.email}')">Edit</button>
+          <button onclick="deleteUser(${u.id})">Delete</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById('userForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('userId').value;
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+
+      if (id) {
+        // UPDATE
+        await fetch(`/users/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email })
+        });
+      } else {
+        // CREATE
+        await fetch('/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email })
+        });
+      }
+
+      resetForm();
+      loadUsers();
+    });
+
+    function editUser(id, name, email) {
+      document.getElementById('userId').value = id;
+      document.getElementById('name').value = name;
+      document.getElementById('email').value = email;
+    }
+
+    async function deleteUser(id) {
+      if (confirm('Yakin mau hapus user ini?')) {
+        await fetch(`/users/${id}`, { method: 'DELETE' });
+        loadUsers();
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('userId').value = '';
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>
