@@ -55,7 +55,18 @@ app.delete('/users/:id', (req, res) => {
     res.json({ message: 'User deleted' });
   });
 });
-
+// Webhook untuk auto-deploy
+const { exec } = require('child_process');
+app.post('/webhook', (req, res) => {
+  exec('./deploy.sh', (err, stdout, stderr) => {
+    if (err) {
+      console.error('❌ Deploy error:', err);
+      return res.sendStatus(500);
+    }
+    console.log('✅ Deploy success:\n', stdout);
+    res.sendStatus(200);
+  });
+});
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
