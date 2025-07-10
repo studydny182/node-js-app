@@ -56,6 +56,7 @@ app.delete('/users/:id', (req, res) => {
   });
 });
 // Webhook untuk auto-deploy
+// testing auto pull ec2
 const { exec } = require('child_process');
 app.post('/webhook', (req, res) => {
   exec('./deploy.sh', (err, stdout, stderr) => {
