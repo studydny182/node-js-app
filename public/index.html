@@ -2,10 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>CRUD Users </title>
+  <title>CRUD Users App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #userList li {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #userList button {
+      margin-left: 10px;
+      background-color: #28a745;
+    }
+
+    #userList button:last-child {
+      background-color: #dc3545;
+    }
+  </style>
 </head>
 <body>
-  <h1>CRUD User App </h1>
+  <h1>CRUD User App</h1>
 
   <form id="userForm">
     <input type="hidden" id="userId">
@@ -27,9 +91,13 @@
       users.forEach(u => {
         const li = document.createElement('li');
         li.innerHTML = `
-          <b>${u.name}</b> (${u.email})
-          <button onclick="editUser(${u.id}, '${u.name}', '${u.email}')">Edit</button>
-          <button onclick="deleteUser(${u.id})">Delete</button>
+          <div>
+            <strong>${u.name}</strong><br><small>${u.email}</small>
+          </div>
+          <div>
+            <button onclick="editUser(${u.id}, '${u.name}', '${u.email}')">Edit</button>
+            <button onclick="deleteUser(${u.id})">Delete</button>
+          </div>
         `;
         list.appendChild(li);
       });
@@ -42,14 +110,12 @@
       const email = document.getElementById('email').value;
 
       if (id) {
-        // UPDATE
         await fetch(`/users/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email })
         });
       } else {
-        // CREATE
         await fetch('/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
